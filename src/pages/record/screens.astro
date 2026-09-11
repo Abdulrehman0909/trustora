@@ -1,0 +1,88 @@
+---
+import RecordLayout from '../../layouts/RecordLayout.astro';
+import MediaFrame from '../../components/editorial/MediaFrame.astro';
+import { media } from '../../data/media';
+import { mediaManifest } from '../../data/site';
+import { recordReviewed } from '../../data/record';
+---
+
+<RecordLayout
+  title="Trustora visual archive | Record Room"
+  description="How Trustora's public pages are visually archived, with section coverage and inspection references."
+  currentPath="/record/screens/"
+  kicker="11 Record / Screens"
+  crumb="Visual archive"
+  jump={[
+    { href: '#screens-compare-title', label: 'Compare captures' },
+    { href: '#screens-coverage-title', label: 'Archive coverage' },
+    { href: '#screens-representatives-title', label: 'Representative pages' },
+    { href: '#screens-gallery-title', label: 'Full archive viewer' },
+  ]}
+>
+  <h1>See the site in context.</h1>
+  <p class="record-dek">Trustora keeps a visual archive of its public pages: full-page captures per route, grouped by section. Captures are historical evidence; live routes may have changed since a capture was taken.</p>
+
+  <aside class="record-scope" aria-label="Archive scope">
+    <h2>Archive scope</h2>
+    <p>Each release captures every indexable route at a fixed viewport width. Opening a route link visits today's public page, which may have changed since the captured edition. Record reviewed {recordReviewed}.</p>
+  </aside>
+
+  <div class="record-actions">
+    <a class="button button-quiet" href="/record/nav/">Open the route inventory</a>
+    <a class="button button-quiet" href="/record/metrics/">Read the measurement rules</a>
+  </div>
+
+  <figure class="record-scene">
+    <MediaFrame src={media['record-screens']} alt={mediaManifest['record-screens'].alt} caption={mediaManifest['record-screens'].caption} credit={mediaManifest['record-screens'].credit} sizes="(max-width: 900px) 100vw, 70vw" />
+  </figure>
+
+  <section aria-labelledby="screens-compare-title">
+    <h2 id="screens-compare-title">Put two captured pages on the same workbench.</h2>
+    <p>Select any two routes to compare hierarchy, route intent, and density. Each card below gives the route's published title and word count so the comparison starts from measured facts, not impressions. Open both routes side by side in your own tabs.</p>
+    <div class="record-brief-grid">
+      <div><span class="record-chip-label">Pair A · Longest vs focused</span><h3>Policy and parameters</h3><p><a href="/legal/policy/">Operations policy</a> (4,816 words) carries the full operating standard; <a href="/country-parameters/">country parameters</a> (242 words) carries the published baseline. Compare completeness against brevity.</p></div>
+      <div><span class="record-chip-label">Pair B · Promise vs boundary</span><h3>Service and baseline</h3><p><a href="/services/employee-intelligence/">Employee intelligence</a> promises capability; <a href="/country-parameters/">country parameters</a> sets the boundary. Compare ambition against jurisdiction.</p></div>
+      <div><span class="record-chip-label">Pair C · Reading vs action</span><h3>Insight and intake</h3><p><a href="/insights/">Insights</a> explains; <a href="/contact/">contact intake</a> collects. Compare the editorial voice against the form it hands to.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="screens-coverage-title">
+    <h2 id="screens-coverage-title">Explore the dated archive by section.</h2>
+    <p>Capture coverage by route section. Widths in the summary below are calculated from the section totals; every indexable route is captured and every capture succeeds in this edition.</p>
+    <div class="record-definition">
+      <table>
+        <caption>Archive entries by section and capture status</caption>
+        <thead><tr><th scope="col">Section</th><th scope="col">Total</th><th scope="col">Captured</th><th scope="col">Redirect</th><th scope="col">Failed</th><th scope="col">Live entry point</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Top level</th><td>25</td><td>25</td><td>0</td><td>0</td><td><a href="/">Home</a></td></tr>
+          <tr><th scope="row">Services</th><td>18</td><td>18</td><td>0</td><td>0</td><td><a href="/services/employer-of-record/">Employer of Record</a></td></tr>
+          <tr><th scope="row">Insights</th><td>16</td><td>16</td><td>0</td><td>0</td><td><a href="/insights/">Insights</a></td></tr>
+          <tr><th scope="row">Briefings</th><td>12</td><td>12</td><td>0</td><td>0</td><td><a href="/briefings/">Briefings</a></td></tr>
+          <tr><th scope="row">Industries</th><td>7</td><td>7</td><td>0</td><td>0</td><td><a href="/industries/">Industries</a></td></tr>
+          <tr><th scope="row">Locations</th><td>6</td><td>6</td><td>0</td><td>0</td><td><a href="/locations/">Locations</a></td></tr>
+          <tr><th scope="row">Legal</th><td>4</td><td>4</td><td>0</td><td>0</td><td><a href="/legal/policy/">Operations policy</a></td></tr>
+          <tr><th scope="row">Careers</th><td>4</td><td>4</td><td>0</td><td>0</td><td><a href="/careers/">Careers</a></td></tr>
+          <tr><th scope="row">Compare</th><td>3</td><td>3</td><td>0</td><td>0</td><td><a href="/resources/">Resources</a></td></tr>
+          <tr><th scope="row">Record Room</th><td>12</td><td>12</td><td>0</td><td>0</td><td><a href="/record/">Company facts</a></td></tr>
+          <tr><th scope="row">All sections</th><td>107</td><td>107</td><td>0</td><td>0</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>On a narrow screen, swipe the table to review all status columns.</p>
+  </section>
+
+  <section aria-labelledby="screens-representatives-title">
+    <h2 id="screens-representatives-title">Representative captures from the archive.</h2>
+    <p>Three routes chosen by explicit criteria: the longest main zone, the most image-dense service route, and the first zero-image route.</p>
+    <div class="record-brief-grid">
+      <div><span class="record-chip-label">Longest main zone</span><h3>Operations policy</h3><p>4,816 main-zone words — the full published operating standard. <a href="/legal/policy/">Open route</a></p></div>
+      <div><span class="record-chip-label">Image-dense service</span><h3>Background verifications</h3><p>2 content images — the densest service detail alongside people operations and global mobility. <a href="/services/background-verifications/">Open route</a></p></div>
+      <div><span class="record-chip-label">First zero-image route</span><h3>EoR FAQ</h3><p>531 words, no main-zone image — text-led reference. <a href="/faq/">Open route</a></p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="screens-gallery-title">
+    <h2 id="screens-gallery-title">Full archive viewer and inspection tools.</h2>
+    <p>The full inspection surface keeps the numbered route directory with live search, the section-grouped tabs, per-page jump navigation, and the record footer on every page. To inspect any route, open its live link above and compare it against the release it documents. Route structure: <a href="/record/nav/">site map</a>. Measurement rules: <a href="/record/metrics/">content inventory</a>. Archive references are historical evidence; a live route link and an archive reference are intentionally separate. Record reviewed {recordReviewed}.</p>
+  </section>
+</RecordLayout>

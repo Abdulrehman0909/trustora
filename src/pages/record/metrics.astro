@@ -1,0 +1,112 @@
+---
+import RecordLayout from '../../layouts/RecordLayout.astro';
+import MediaFrame from '../../components/editorial/MediaFrame.astro';
+import { media } from '../../data/media';
+import { mediaManifest } from '../../data/site';
+import { recordReviewed } from '../../data/record';
+import { recordGraphTotals, recordGraphSections, recordGraphInventory, recordGraphGeneratedAt } from '../../data/recordGraph';
+
+const sectionLabel: Record<string, string> = {
+  top: 'Top level', services: 'Services', insights: 'Insights', briefings: 'Briefings',
+  industries: 'Industries', locations: 'Locations', legal: 'Legal', careers: 'Careers',
+  compare: 'Compare', record: 'Record Room',
+};
+const byWords = [...recordGraphInventory].sort((a, b) => b.words - a.words);
+const longest = byWords[0];
+const zeroImage = recordGraphInventory.find((r) => r.images === 0) ?? recordGraphInventory[0];
+const mostImages = [...recordGraphInventory].sort((a, b) => b.images - a.images || b.words - a.words)[0];
+const avg = (n: number, d: number) => (d ? (n / d).toFixed(1) : '—');
+---
+
+<RecordLayout
+  title="Trustora content inventory | Record Room"
+  description="Trustora's page inventory by section, with measurement rules and record archive references."
+  currentPath="/record/metrics/"
+  kicker="09 Record / Metrics"
+  crumb="Content inventory"
+  jump={[
+    { href: '#record-metrics-totals-title', label: 'Captured totals' },
+    { href: '#record-metrics-inventory-title', label: 'Page inventory' },
+    { href: '#record-metrics-distribution-title', label: 'Section averages' },
+    { href: '#record-metrics-findings-title', label: 'Measured observations' },
+    { href: '#record-metrics-method-title', label: 'Method and sources' },
+  ]}
+>
+  <h1>Page inventory: structure and measurement rules.</h1>
+  <p class="record-dek">This page reports the build-time inventory: route counts, main-zone word counts, content images, and title lengths. It is an artifact measurement, not a visitor, conversion, or accessibility-conformance report.</p>
+
+  <aside class="record-scope" aria-label="Reading boundary">
+    <h2>Inventory, not audience.</h2>
+    <p><a href="/record/nav/">Site map</a> reports route connections. <a href="/record/marketing/">Market profile</a> records published company positioning. Metrics reports what this edition contains and how each value is calculated.</p>
+  </aside>
+
+  <div class="record-actions">
+    <a class="button button-quiet" href="/record/nav/">Trace route structure</a>
+    <a class="button button-quiet" href="/record/ops/">Carry a follow-up into Ops</a>
+    <a class="button button-quiet" href="/record/marketing/">Read market signals</a>
+  </div>
+
+  <figure class="record-scene">
+    <MediaFrame src={media['record-metrics']} alt={mediaManifest['record-metrics'].alt} caption={mediaManifest['record-metrics'].caption} credit={mediaManifest['record-metrics'].credit} sizes="(max-width: 900px) 100vw, 70vw" />
+  </figure>
+
+  <section aria-labelledby="record-metrics-totals-title">
+    <h2 id="record-metrics-totals-title">Route totals by section.</h2>
+    <p>Values below group the routes generated from the build's route families. “Main” means the <code>&lt;main&gt;</code> zone; image totals count content figures. Source generated {recordGraphGeneratedAt}.</p>
+    <div class="record-stat-band">
+      <div><strong>{recordGraphTotals.routes}</strong><span>Indexed routes</span></div>
+      <div><strong>{recordGraphTotals.words.toLocaleString()}</strong><span>Main-zone words</span></div>
+      <div><strong>{recordGraphTotals.images}</strong><span>Content images</span></div>
+      <div><strong>{recordGraphTotals.handoffs}</strong><span>Body-copy handoffs</span></div>
+    </div>
+    <div class="record-definition">
+      <table>
+        <caption>Pages, words, and images by section</caption>
+        <thead><tr><th scope="col">Section</th><th scope="col">Routes</th><th scope="col">Main words</th><th scope="col">Words / route</th><th scope="col">Images</th><th scope="col">Images / route</th></tr></thead>
+        <tbody>
+          {recordGraphSections.map((s) => (
+            <tr><th scope="row">{sectionLabel[s.name]}</th><td>{s.routes}</td><td>{s.words.toLocaleString()}</td><td>{avg(s.words, s.routes)}</td><td>{s.images}</td><td>{avg(s.images, s.routes)}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="record-metrics-inventory-title">
+    <h2 id="record-metrics-inventory-title">Find the routes behind the counts.</h2>
+    <p>Every indexed route with its section, main-zone words, content images, and title length. Use your browser's find command to locate a route.</p>
+    <div class="record-definition">
+      <table>
+        <caption>Complete route inventory with content measures</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Route</th><th scope="col">Section</th><th scope="col">Main words</th><th scope="col">Images</th><th scope="col">Title length</th></tr></thead>
+        <tbody>
+          {recordGraphInventory.map((row, i) => (
+            <tr><th scope="row">{i + 1}</th><td><a href={row.href}>{row.file}</a></td><td>{sectionLabel[row.section]}</td><td>{row.words.toLocaleString()}</td><td>{row.images}</td><td>{row.titleLen}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="record-metrics-distribution-title">
+    <h2 id="record-metrics-distribution-title">Section-level shape.</h2>
+    <p>Careers and legal are the densest per route (long-form policy and role pages); locations and industries are the lightest (focused briefs). Services carry the most images per route. Record Room sits in the middle on both measures.</p>
+  </section>
+
+  <section aria-labelledby="record-metrics-findings-title">
+    <h2 id="record-metrics-findings-title">Computed observations from the inventory.</h2>
+    <p>These observations are arithmetic over the indexed routes. They describe distribution; they do not turn a count into a quality verdict.</p>
+    <div class="record-numbered">
+      <article><span>01</span><div><h3>Long-form depth sits in careers and legal</h3><p>Careers averages the most words per route, followed by legal — role detail and the published operations policy. Locations averages the fewest.</p></div></article>
+      <article><span>02</span><div><h3>Copy and media do not move together</h3><p>Services reach the most images per route while briefings, careers, and legal carry none in the main zone; insights pairs long copy with exactly one image per route.</p></div></article>
+      <article><span>03</span><div><h3>Representative routes anchor the range</h3><p>Longest main zone: <a href={longest.href}>{longest.file}</a> ({longest.words.toLocaleString()} words). Most images: <a href={mostImages.href}>{mostImages.file}</a> ({mostImages.images} images). First zero-image route: <a href={zeroImage.href}>{zeroImage.file}</a>.</p></div></article>
+    </div>
+  </section>
+
+  <section class="record-sources" aria-labelledby="record-metrics-method-title">
+    <h2 id="record-metrics-method-title">Method and source fields.</h2>
+    <p><strong>Included in the calculation:</strong> routes from the built output, grouped by first path segment; main-zone totals from the <code>&lt;main&gt;</code> zone; words from rendered text; images from content figures; title lengths from built HTML. Source integers remain the basis of every total.</p>
+    <p><strong>Excluded from this measurement:</strong> no traffic, search demand, conversions, social sentiment, or visitor analytics; no judgment of visual quality, readability, contrast, or screen-reader experience; no claim beyond the routes in this build.</p>
+    <p>Record reviewed {recordReviewed}. This page preserves the measured values and their source boundary.</p>
+  </section>
+</RecordLayout>
