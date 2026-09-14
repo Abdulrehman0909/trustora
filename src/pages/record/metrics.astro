@@ -4,7 +4,7 @@ import MediaFrame from '../../components/editorial/MediaFrame.astro';
 import { media } from '../../data/media';
 import { mediaManifest } from '../../data/site';
 import { recordReviewed } from '../../data/record';
-import { recordGraphTotals, recordGraphSections, recordGraphInventory, recordGraphGeneratedAt } from '../../data/recordGraph';
+import { recordGraphTotals, recordGraphSections, recordGraphInventory, recordGraphGeneratedAt, recordGraphSiteTerms } from '../../data/recordGraph';
 
 const sectionLabel: Record<string, string> = {
   top: 'Top level', services: 'Services', insights: 'Insights', briefings: 'Briefings',
@@ -25,10 +25,12 @@ const avg = (n: number, d: number) => (d ? (n / d).toFixed(1) : '—');
   kicker="09 Record / Metrics"
   crumb="Content inventory"
   jump={[
-    { href: '#record-metrics-totals-title', label: 'Captured totals' },
+    { href: '#record-metrics-totals-title', label: 'Route totals' },
     { href: '#record-metrics-inventory-title', label: 'Page inventory' },
     { href: '#record-metrics-distribution-title', label: 'Section averages' },
     { href: '#record-metrics-findings-title', label: 'Measured observations' },
+    { href: '#record-metrics-language-title', label: 'Vocabulary index' },
+    { href: '#record-metrics-inspection-title', label: 'Representative routes' },
     { href: '#record-metrics-method-title', label: 'Method and sources' },
   ]}
 >
@@ -72,25 +74,112 @@ const avg = (n: number, d: number) => (d ? (n / d).toFixed(1) : '—');
     </div>
   </section>
 
+  <aside class="record-quick-start" aria-label="Inventory tools and source file">
+    <h3>Inventory tools and source file.</h3>
+    <p>Search every indexed route, filter by section, and open the exact page. The table below carries the unrounded source values behind every total on this page.</p>
+    <div class="record-actions">
+      <a class="button button-quiet" href="#record-metrics-inventory-title">Search inventory</a>
+      <a class="button button-quiet" href="/record/nav/">Open site map</a>
+      <a class="button button-quiet" href="/record/screens/">Open archive</a>
+    </div>
+    <dl class="record-chip-row">
+      <div><dt>Rows in inventory</dt><dd>{recordGraphTotals.routes}</dd></div>
+      <div><dt>Source edition</dt><dd>{recordGraphGeneratedAt}</dd></div>
+    </dl>
+  </aside>
+
   <section aria-labelledby="record-metrics-inventory-title">
     <h2 id="record-metrics-inventory-title">Find the routes behind the counts.</h2>
-    <p>Every indexed route with its section, main-zone words, content images, and title length. Use your browser's find command to locate a route.</p>
+    <p>Every indexed route with its section, main-zone words, content images, and title length. Filter by text or section; the full list remains readable when JavaScript is unavailable.</p>
+    <form class="record-filter" id="record-metrics-filter">
+      <div class="field">
+        <label for="record-metrics-search">Search routes</label>
+        <input type="search" id="record-metrics-search" placeholder="Filter by file or title" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="record-metrics-section">Section</label>
+        <select id="record-metrics-section">
+          <option value="">All sections</option>
+          {recordGraphSections.map((s) => <option value={s.name}>{sectionLabel[s.name]}</option>)}
+        </select>
+      </div>
+      <div class="field">
+        <label for="record-metrics-sort">Sort rows by</label>
+        <select id="record-metrics-sort">
+          <option value="source">Source order</option>
+          <option value="words">Main words, high to low</option>
+          <option value="images">Content images, high to low</option>
+          <option value="title">Title length, low to high</option>
+        </select>
+      </div>
+      <button class="button button-quiet" type="reset">Reset view</button>
+      <p class="record-result-count" id="record-metrics-count" role="status">Showing {recordGraphInventory.length} of {recordGraphInventory.length} indexed routes.</p>
+    </form>
     <div class="record-definition">
-      <table>
+      <table id="record-metrics-table">
         <caption>Complete route inventory with content measures</caption>
         <thead><tr><th scope="col">#</th><th scope="col">Route</th><th scope="col">Section</th><th scope="col">Main words</th><th scope="col">Images</th><th scope="col">Title length</th></tr></thead>
         <tbody>
           {recordGraphInventory.map((row, i) => (
-            <tr><th scope="row">{i + 1}</th><td><a href={row.href}>{row.file}</a></td><td>{sectionLabel[row.section]}</td><td>{row.words.toLocaleString()}</td><td>{row.images}</td><td>{row.titleLen}</td></tr>
+            <tr data-search={`${row.file} ${row.title}`.toLowerCase()} data-section={row.section} data-words={row.words} data-images={row.images} data-titlelen={row.titleLen}><th scope="row">{i + 1}</th><td><a href={row.href}>{row.file}</a></td><td>{sectionLabel[row.section]}</td><td>{row.words.toLocaleString()}</td><td>{row.images}</td><td>{row.titleLen}</td></tr>
           ))}
         </tbody>
       </table>
     </div>
+    <script is:inline>
+      (() => {
+        const form = document.getElementById('record-metrics-filter');
+        if (!form) return;
+        const search = document.getElementById('record-metrics-search');
+        const section = document.getElementById('record-metrics-section');
+        const sort = document.getElementById('record-metrics-sort');
+        const count = document.getElementById('record-metrics-count');
+        const tbody = document.querySelector('#record-metrics-table tbody');
+        const rows = [...tbody.querySelectorAll('tr')];
+        const total = rows.length;
+        const apply = () => {
+          const q = search.value.trim().toLowerCase();
+          const s = section.value;
+          let visible = 0;
+          rows.forEach((tr) => {
+            const show = (!q || tr.dataset.search.includes(q)) && (!s || tr.dataset.section === s);
+            tr.hidden = !show;
+            if (show) visible += 1;
+          });
+          const mode = sort.value;
+          const vis = rows.filter((tr) => !tr.hidden);
+          const key = mode === 'words' ? 'words' : mode === 'images' ? 'images' : mode === 'title' ? 'titlelen' : null;
+          if (key) {
+            const desc = key !== 'titlelen';
+            vis.sort((a, b) => desc ? Number(b.dataset[key]) - Number(a.dataset[key]) : Number(a.dataset[key]) - Number(b.dataset[key]));
+            vis.forEach((tr) => tbody.appendChild(tr));
+          }
+          count.textContent = `Showing ${visible} of ${total} indexed routes.`;
+        };
+        search.addEventListener('input', apply);
+        section.addEventListener('change', apply);
+        sort.addEventListener('change', apply);
+        form.addEventListener('reset', () => requestAnimationFrame(() => { apply(); search.focus(); }));
+      })();
+    </script>
   </section>
 
   <section aria-labelledby="record-metrics-distribution-title">
-    <h2 id="record-metrics-distribution-title">Section-level shape.</h2>
+    <h2 id="record-metrics-distribution-title">Section-level averages.</h2>
     <p>Careers and legal are the densest per route (long-form policy and role pages); locations and industries are the lightest (focused briefs). Services carry the most images per route. Record Room sits in the middle on both measures.</p>
+    <figure class="record-figure" aria-label="Average words and images per route by section">
+      <figcaption><span>Figure 02 · Words and images per route by section</span><span>Bar length uses the largest average in this edition.</span></figcaption>
+      <div class="record-figure-bars">
+        {[...recordGraphSections].sort((a, b) => (b.words / b.routes) - (a.words / a.routes)).slice(0, 8).map((s) => {
+          const max = 1705.8;
+          const v = s.words / s.routes;
+          return (
+            <div><dt>{sectionLabel[s.name]}</dt><dd><span class="record-figure-bar" style={`width: ${Math.max(4, Math.round((v / max) * 100))}%`}></span></dd><span class="record-count">{v.toFixed(1)} w/route</span></div>
+          );
+        })}
+      </div>
+      <figcaption><span>Text equivalent</span><span>Careers leads on words per route, followed by legal; services leads on images per route. Exact section counts, totals, and units are in the table above.</span></figcaption>
+    </figure>
   </section>
 
   <section aria-labelledby="record-metrics-findings-title">
@@ -99,14 +188,47 @@ const avg = (n: number, d: number) => (d ? (n / d).toFixed(1) : '—');
     <div class="record-numbered">
       <article><span>01</span><div><h3>Long-form depth sits in careers and legal</h3><p>Careers averages the most words per route, followed by legal — role detail and the published operations policy. Locations averages the fewest.</p></div></article>
       <article><span>02</span><div><h3>Copy and media do not move together</h3><p>Services reach the most images per route while briefings, careers, and legal carry none in the main zone; insights pairs long copy with exactly one image per route.</p></div></article>
-      <article><span>03</span><div><h3>Representative routes anchor the range</h3><p>Longest main zone: <a href={longest.href}>{longest.file}</a> ({longest.words.toLocaleString()} words). Most images: <a href={mostImages.href}>{mostImages.file}</a> ({mostImages.images} images). First zero-image route: <a href={zeroImage.href}>{zeroImage.file}</a>.</p></div></article>
+      <article><span>03</span><div><h3>Counts are labels, not verdicts</h3><p>Use the per-route table above and a human review before changing copy or metadata on the strength of a number alone.</p></div></article>
     </div>
+  </section>
+
+  <section aria-labelledby="record-metrics-language-title">
+    <h2 id="record-metrics-language-title">The vocabulary index is not demand.</h2>
+    <p>Token counts and the number of indexed routes containing each term. They can reveal repeated language to edit or clarify; they cannot establish search volume, sentiment, ranking, or visitor intent.</p>
+    <div class="record-definition">
+      <table>
+        <caption>Top site terms by occurrence</caption>
+        <thead><tr><th scope="col">Term</th><th scope="col">Occurrences</th><th scope="col">Indexed routes</th></tr></thead>
+        <tbody>
+          {recordGraphSiteTerms.map((t) => (
+            <tr><th scope="row">{t.term}</th><td>{t.occurrences.toLocaleString()}</td><td>{t.pages}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="record-metrics-inspection-title">
+    <h2 id="record-metrics-inspection-title">Open representative routes.</h2>
+    <p>Three routes chosen by explicit criteria: the longest main zone, the most image-dense service route, and the first zero-image route.</p>
+    <ol class="record-numbered" style="list-style: none">
+      <article><span>01</span><div><h3>Longest main zone — {longest.file}</h3><p>{longest.words.toLocaleString()} main-zone words. <a href={longest.href}>Open route ↗</a></p></div></article>
+      <article><span>02</span><div><h3>Most images — {mostImages.file}</h3><p>{mostImages.images} content images · {mostImages.words.toLocaleString()} main words. <a href={mostImages.href}>Open route ↗</a></p></div></article>
+      <article><span>03</span><div><h3>First zero-image route — {zeroImage.file}</h3><p>{zeroImage.words.toLocaleString()} words, no main-zone image. <a href={zeroImage.href}>Open route ↗</a></p></div></article>
+    </ol>
+    <nav class="record-actions" aria-label="Related record pages">
+      <a class="button button-quiet" href="/record/nav/">Trace route structure</a>
+      <a class="button button-quiet" href="/record/ops/">Carry a follow-up into Ops</a>
+      <a class="button button-quiet" href="/record/marketing/">Read market signals</a>
+    </nav>
   </section>
 
   <section class="record-sources" aria-labelledby="record-metrics-method-title">
     <h2 id="record-metrics-method-title">Method and source fields.</h2>
-    <p><strong>Included in the calculation:</strong> routes from the built output, grouped by first path segment; main-zone totals from the <code>&lt;main&gt;</code> zone; words from rendered text; images from content figures; title lengths from built HTML. Source integers remain the basis of every total.</p>
-    <p><strong>Excluded from this measurement:</strong> no traffic, search demand, conversions, social sentiment, or visitor analytics; no judgment of visual quality, readability, contrast, or screen-reader experience; no claim beyond the routes in this build.</p>
+    <div class="record-method-grid">
+      <div><h3>Included in the calculation</h3><ul><li>Routes from the built output, grouped by first path segment.</li><li>Main-zone totals from the <code>&lt;main&gt;</code> zone only.</li><li>Words from rendered text, images from content figures, title lengths from built HTML.</li><li>Source integers remain the basis of every total.</li></ul></div>
+      <div><h3>Excluded from this measurement</h3><ul><li>No traffic, search demand, conversions, or social sentiment.</li><li>No judgment of visual quality, readability, contrast, or screen-reader experience.</li><li>No claim beyond the routes in this build.</li><li>No inference that a count is a defect without human review.</li></ul></div>
+    </div>
     <p>Record reviewed {recordReviewed}. This page preserves the measured values and their source boundary.</p>
   </section>
 </RecordLayout>

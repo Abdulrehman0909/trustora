@@ -54,11 +54,11 @@ const sectionCover: Record<string, string> = {
     <p>Node boundary: every indexable route in this build, including the 12 Record Room pages. Edges count distinct source-page to target-page body-copy handoffs inside <code>&lt;main&gt;</code>; repeated header and footer navigation is excluded.</p>
   </aside>
 
-  <div class="record-actions">
+  <nav class="record-actions" aria-label="Record archive choices">
     <a class="button button-quiet" href="/record/journeys/">Read decision briefs</a>
     <a class="button button-quiet" href="/record/screens/">Inspect the archive</a>
     <a class="button button-quiet" href="/record/metrics/">Read the measurement rules</a>
-  </div>
+  </nav>
 
   <figure class="record-scene">
     <MediaFrame src={media['record-nav']} alt={mediaManifest['record-nav'].alt} caption={mediaManifest['record-nav'].caption} credit={mediaManifest['record-nav'].credit} sizes="(max-width: 900px) 100vw, 70vw" />
@@ -66,19 +66,60 @@ const sectionCover: Record<string, string> = {
 
   <section aria-labelledby="record-nav-explorer-title">
     <h2 id="record-nav-explorer-title">Search the source-to-destination inventory.</h2>
-    <p>Every body-copy handoff below is a direct link from one public route to another. Use your browser's find command to filter by source or destination file. The list remains complete and readable when JavaScript is unavailable.</p>
-    <p>Showing {recordGraphEdges.length} body-copy handoffs from the {recordGraphGeneratedAt} graph.</p>
+    <p>Every body-copy handoff below is a direct link from one public route to another. Filter by text or section; the full list remains readable when JavaScript is unavailable.</p>
+    <form class="record-filter" id="record-nav-filter">
+      <div class="field">
+        <label for="record-nav-search">Search source or destination</label>
+        <input type="search" id="record-nav-search" name="route-search" placeholder="e.g. services, insights, contact" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="record-nav-section">Section</label>
+        <select id="record-nav-section" name="route-section">
+          <option value="">All sections</option>
+          {recordGraphMatrixOrder.map((s) => <option value={s}>{sectionLabel[s]}</option>)}
+        </select>
+      </div>
+      <button class="button button-quiet" type="reset">Reset</button>
+      <p class="record-result-count" id="record-nav-count" role="status">Showing {recordGraphEdges.length} body-copy handoffs from the {recordGraphGeneratedAt} graph.</p>
+    </form>
     <div class="record-definition">
-      <table>
+      <table id="record-nav-edge-table">
         <caption>Source-to-destination body-copy handoffs</caption>
         <thead><tr><th scope="col">#</th><th scope="col">Source</th><th scope="col">Destination</th></tr></thead>
         <tbody>
           {recordGraphEdges.map(([from, to], i) => (
-            <tr><th scope="row">{i + 1}</th><td><a href={`/${from === 'index' ? '' : from + '/'}`}>{from}</a></td><td><a href={`/${to === 'index' ? '' : to + '/'}`}>{to}</a></td></tr>
+            <tr data-search={`${from} → ${to}`} data-source={from.split('/')[0]} data-dest={to.split('/')[0]}><th scope="row">{i + 1}</th><td><a href={`/${from === 'index' ? '' : from + '/'}`}>{from}</a></td><td><a href={`/${to === 'index' ? '' : to + '/'}`}>{to}</a></td></tr>
           ))}
         </tbody>
       </table>
     </div>
+    <script is:inline>
+      (() => {
+        const form = document.getElementById('record-nav-filter');
+        if (!form) return;
+        const search = document.getElementById('record-nav-search');
+        const section = document.getElementById('record-nav-section');
+        const count = document.getElementById('record-nav-count');
+        const rows = [...document.querySelectorAll('#record-nav-edge-table tbody tr')];
+        const total = rows.length;
+        const apply = () => {
+          const q = search.value.trim().toLowerCase();
+          const s = section.value;
+          let visible = 0;
+          rows.forEach((tr) => {
+            const inSection = !s || tr.dataset.source === s || tr.dataset.dest === s;
+            const inQuery = !q || tr.dataset.search.toLowerCase().includes(q);
+            const show = inSection && inQuery;
+            tr.hidden = !show;
+            if (show) visible += 1;
+          });
+          count.textContent = `Showing ${visible} of ${total} body-copy handoffs.`;
+        };
+        search.addEventListener('input', apply);
+        section.addEventListener('change', apply);
+        form.addEventListener('reset', () => requestAnimationFrame(() => { apply(); search.focus(); }));
+      })();
+    </script>
   </section>
 
   <section aria-labelledby="record-nav-zones-title">
@@ -93,6 +134,27 @@ const sectionCover: Record<string, string> = {
   <section aria-labelledby="record-nav-map-title">
     <h2 id="record-nav-map-title">Section link volumes in the frozen graph.</h2>
     <p>The strongest content-zone handoffs: insights links within itself {recordGraphMatrix['insights']['insights']} times; services within itself {recordGraphMatrix['services']['services']} times; top level hands to services, insights, and briefings {recordGraphMatrix['top']['services']}, {recordGraphMatrix['top']['insights']}, and {recordGraphMatrix['top']['briefings']} times. The matrix below is the complete section-level count; arrowheads read source down, target across.</p>
+    <figure class="record-figure" aria-label="Directed content connections between public site sections">
+      <figcaption><span>Figure 01 · Selected body-copy links, grouped by section</span><span>Arrowheads show source → target; a number is the count of distinct directed edges. Narrow view: scroll horizontally.</span></figcaption>
+      <div class="record-figure-bars">
+        {[
+          ['Insights → Insights', recordGraphMatrix['insights']['insights']],
+          ['Services → Services', recordGraphMatrix['services']['services']],
+          ['Record → Record', recordGraphMatrix['record']['record']],
+          ['Services → Top level', recordGraphMatrix['services']['top']],
+          ['Record → Legal', recordGraphMatrix['record']['legal']],
+          ['Record → Top level', recordGraphMatrix['record']['top']],
+          ['Top → Services', recordGraphMatrix['top']['services']],
+          ['Top → Insights', recordGraphMatrix['top']['insights']],
+        ].map(([label, value]) => {
+          const max = recordGraphMatrix['insights']['insights'];
+          return (
+            <div><dt>{label}</dt><dd><span class="record-figure-bar" style={`width: ${Math.max(4, Math.round((Number(value) / max) * 100))}%`}></span></dd><span class="record-count">{value}</span></div>
+          );
+        })}
+      </div>
+      <figcaption><span>Text equivalent</span><span>In the content zone, Insights → Insights has {recordGraphMatrix['insights']['insights']} edges and Services → Services {recordGraphMatrix['services']['services']}; Record → Record has {recordGraphMatrix['record']['record']}. The numbered bars describe directed page links, not the order a visitor took.</span></figcaption>
+    </figure>
     <div class="record-definition">
       <table>
         <caption>Directed body-copy edges by source section (rows) and target section (columns)</caption>

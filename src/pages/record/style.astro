@@ -19,6 +19,7 @@ import { recordReviewed, verificationBoundaryNote } from '../../data/record';
     { href: '#record-style-lockups-title', label: 'Logo downloads' },
     { href: '#record-style-voice-title', label: 'Company boilerplate' },
     { href: '#record-style-media-title', label: 'Creative assets' },
+    { href: '#record-style-presskit-title', label: 'Contact routing' },
   ]}
 >
   <h1>Trustora visual system and public assets.</h1>
@@ -116,6 +117,7 @@ import { recordReviewed, verificationBoundaryNote } from '../../data/record';
         <thead><tr><th scope="col">Asset</th><th scope="col">Path</th><th scope="col">Use</th></tr></thead>
         <tbody>
           <tr><th scope="row">Text logo</th><td><a href="/images/trustora-text-logo.svg">/images/trustora-text-logo.svg</a></td><td>Header, footer, sidebar, light fields (180 × 42)</td></tr>
+          <tr><th scope="row">Reversed lockup</th><td>Same text logo, inverted via CSS</td><td>Dark fields · sidebar, footer, record chrome</td></tr>
           <tr><th scope="row">Mark</th><td><a href="/images/trustora-logo.svg">/images/trustora-logo.svg</a></td><td>Avatars and section markers</td></tr>
           <tr><th scope="row">Favicon</th><td><a href="/images/favicon.svg">/images/favicon.svg</a></td><td>Browser chrome (SVG, with /favicon.ico fallback)</td></tr>
           <tr><th scope="row">Social image</th><td><a href="/images/trustora-og-image.svg">/images/trustora-og-image.svg</a></td><td>Open Graph link previews</td></tr>
@@ -141,27 +143,31 @@ import { recordReviewed, verificationBoundaryNote } from '../../data/record';
 
   <section aria-labelledby="record-style-media-title">
     <h2 id="record-style-media-title">Record scene photographs and their limits.</h2>
-    <p>All twelve record pages use freely licensed business photographs: teams collaborating, meetings, handshakes, office towers, financial documents, workspaces, laptops, and a colour reference book. Each photograph is a distinct AVIF source used once site-wide. Photographs depict illustrative business scenes, not Trustora people, facilities, or products.</p>
+    <p>All twelve record pages use freely licensed object photographs: pens, notebooks, stamps, document stacks, calculators, keyboards, laptops, and single rooms. Each photograph is a distinct AVIF source used once site-wide. Photographs depict illustrative business objects, not Trustora people, teams, offices, or facilities, and carry no misleading impression of headcount or premises.</p>
     <div class="record-definition">
       <table>
-        <caption>Record scene photographs and credits</caption>
-        <thead><tr><th scope="col">Record page</th><th scope="col">Photograph</th><th scope="col">Credit</th></tr></thead>
+        <caption>Record scene photographs</caption>
+        <thead><tr><th scope="col">Record page</th><th scope="col">Photograph</th><th scope="col">Archive</th></tr></thead>
         <tbody>
-          <tr><th scope="row"><a href="/record/">Company facts</a></th><td>Team collaborating around a table with laptops</td><td>Christina @ wocintechchat.com</td></tr>
-          <tr><th scope="row"><a href="/record/leadership/">Leadership</a></th><td>Diverse business team in a modern office</td><td>Vitaly Gariev</td></tr>
-          <tr><th scope="row"><a href="/record/marketing/">Market profile</a></th><td>Professionals collaborating in an office meeting</td><td>Vitaly Gariev</td></tr>
-          <tr><th scope="row"><a href="/record/journeys/">Decision briefs</a></th><td>Two people shaking hands</td><td>Cytonn Photography</td></tr>
-          <tr><th scope="row"><a href="/record/federal/">Registration records</a></th><td>City high-rise office buildings in daylight</td><td>Sean Pollock</td></tr>
-          <tr><th scope="row"><a href="/record/verify/">Source register</a></th><td>Desk with financial charts and documents</td><td>Jakub Zerdzicki</td></tr>
-          <tr><th scope="row"><a href="/record/files/">Documents</a></th><td>Reviewing documents at a wooden table</td><td>Andreea Avramescu</td></tr>
-          <tr><th scope="row"><a href="/record/nav/">Site map</a></th><td>Large open-plan office space</td><td>Wesley Tingey</td></tr>
-          <tr><th scope="row"><a href="/record/metrics/">Content inventory</a></th><td>Presenting during a meeting with a laptop</td><td>Headway</td></tr>
-          <tr><th scope="row"><a href="/record/screens/">Visual archive</a></th><td>Open laptop beside a mug on a desk</td><td>Igor Miske</td></tr>
-          <tr><th scope="row"><a href="/record/ops/">Business status</a></th><td>People working at desks in an open-plan office</td><td>Md Ishak Rahman</td></tr>
-          <tr><th scope="row"><a href="/record/style/">Brand guide</a></th><td>Colour reference book for design work</td><td>Balazs Ketyi</td></tr>
+          <tr><th scope="row"><a href="/record/">Company facts</a></th><td>Fountain pen resting on a spiral book</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/leadership/">Leadership</a></th><td>Single empty office room with desk and chairs</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/marketing/">Market profile</a></th><td>Single office with white table and black chairs</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/journeys/">Decision briefs</a></th><td>Rubber stamp, scissors, and card on a table</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/federal/">Registration records</a></th><td>Vintage rubber stamps and plaques on display</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/verify/">Source register</a></th><td>Desk with smartphone and financial charts</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/files/">Documents</a></th><td>Stacks of paper documents and file folders</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/nav/">Site map</a></th><td>Single conference room with table and chairs</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/metrics/">Content inventory</a></th><td>Calculator on a table next to a laptop</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/screens/">Visual archive</a></th><td>Single laptop computer on a table</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/ops/">Business status</a></th><td>Computer keyboard and mouse on a desk</td><td>Trustora brand archive</td></tr>
+          <tr><th scope="row"><a href="/record/style/">Brand guide</a></th><td>Pencil resting on a book in shallow focus</td><td>Trustora brand archive</td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section aria-labelledby="record-style-presskit-title">
+    <h2 id="record-style-presskit-title">Public email and intake.</h2>
     <h3>Contact routing</h3>
     <p>Public email: info@trustora.net — general and engagement inquiries. Intake: <a href="/contact/">open the contact route</a>. Source register: <a href="/record/verify/">open the verification record</a>.</p>
     <div class="record-brief-grid">

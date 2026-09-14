@@ -20,7 +20,12 @@ import { recordReviewed, policyEffective, policyPdf } from '../../data/record';
 >
   <h1>Public document register.</h1>
   <p class="record-dek">The published operating policy is summarized here so a reader can understand its contents and evidence boundaries before opening the file. The register keeps company policy, attribution, and artifact metadata together.</p>
-  <p><strong>1</strong> company PDF available in this build</p>
+  <div class="record-stat-band">
+    <div><strong>1</strong><span>Company PDF</span></div>
+    <div><strong>{policyPdf.pages}</strong><span>Pages</span></div>
+    <div><strong>{Math.round(policyPdf.bytes / 1024)}</strong><span>Kilobytes</span></div>
+    <div><strong>SHA-256</strong><span>Pinned hash</span></div>
+  </div>
 
   <figure class="record-scene">
     <MediaFrame src={media['record-files']} alt={mediaManifest['record-files'].alt} caption={mediaManifest['record-files'].caption} credit={mediaManifest['record-files'].credit} sizes="(max-width: 900px) 100vw, 70vw" />
