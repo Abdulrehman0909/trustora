@@ -87,7 +87,7 @@ import { recordReviewed, verificationBoundaryNote } from '../../data/record';
         </tbody>
       </table>
     </div>
-    <p>Source method: WCAG 2.2 contrast calculation for sRGB foreground/background pairs. Recheck text over photography or gradients against the actual pixels.</p>
+    <p>Source method: WCAG 2.2 contrast calculation for sRGB foreground/background pairs per <a href="https://www.w3.org/TR/WCAG22/#dfn-relative-luminance" rel="noopener">W3C relative luminance</a>. Screen-reader-only notes below every contrast table provide the text equivalent for readers who rely on assistive technology. Recheck text over photography or gradients against the actual pixels.</p>
   </section>
 
   <section aria-labelledby="record-style-type-title">
@@ -96,13 +96,13 @@ import { recordReviewed, verificationBoundaryNote } from '../../data/record';
     <div class="record-definition">
       <table>
         <caption>Public site type values</caption>
-        <thead><tr><th scope="col">Level</th><th scope="col">Token size</th><th scope="col">Family</th></tr></thead>
+        <thead><tr><th scope="col">Level</th><th scope="col">Token size</th><th scope="col">Family</th><th scope="col">Weight</th><th scope="col">Leading</th></tr></thead>
         <tbody>
-          <tr><th scope="row">H1</th><td><code>--step-4</code> · clamp(2.3rem, 1.72rem + 2.5vw, 4rem)</td><td>Georgia display</td></tr>
-          <tr><th scope="row">H2</th><td><code>--step-3</code> · clamp(1.9rem, 1.42rem + 2.1vw, 3.45rem)</td><td>Georgia display</td></tr>
-          <tr><th scope="row">H3</th><td><code>--step-2</code> · clamp(1.45rem, 1.22rem + 0.95vw, 2.1rem)</td><td>Georgia display</td></tr>
-          <tr><th scope="row">Body</th><td><code>--step-0</code> · clamp(0.98rem, 0.95rem + 0.12vw, 1.06rem)</td><td>Inter body</td></tr>
-          <tr><th scope="row">Mono / kickers</th><td><code>--step--1</code> · clamp(0.78rem, 0.75rem + 0.1vw, 0.88rem)</td><td>Mono stack</td></tr>
+          <tr><th scope="row">H1</th><td><code>--step-4</code> · clamp(2.3rem, 1.72rem + 2.5vw, 4rem)</td><td>Georgia display</td><td>400</td><td>1.15</td></tr>
+          <tr><th scope="row">H2</th><td><code>--step-3</code> · clamp(1.9rem, 1.42rem + 2.1vw, 3.45rem)</td><td>Georgia display</td><td>400</td><td>1.2</td></tr>
+          <tr><th scope="row">H3</th><td><code>--step-2</code> · clamp(1.45rem, 1.22rem + 0.95vw, 2.1rem)</td><td>Georgia display</td><td>400</td><td>1.25</td></tr>
+          <tr><th scope="row">Body</th><td><code>--step-0</code> · clamp(0.98rem, 0.95rem + 0.12vw, 1.06rem)</td><td>Inter body</td><td>400</td><td>1.6</td></tr>
+          <tr><th scope="row">Mono / kickers</th><td><code>--step--1</code> · clamp(0.78rem, 0.75rem + 0.1vw, 0.88rem)</td><td>Mono stack</td><td>400</td><td>1.5</td></tr>
         </tbody>
       </table>
     </div>
@@ -120,6 +120,7 @@ import { recordReviewed, verificationBoundaryNote } from '../../data/record';
           <tr><th scope="row">Reversed lockup</th><td>Same text logo, inverted via CSS</td><td>Dark fields · sidebar, footer, record chrome</td></tr>
           <tr><th scope="row">Mark</th><td><a href="/images/trustora-logo.svg">/images/trustora-logo.svg</a></td><td>Avatars and section markers</td></tr>
           <tr><th scope="row">Favicon</th><td><a href="/images/favicon.svg">/images/favicon.svg</a></td><td>Browser chrome (SVG, with /favicon.ico fallback)</td></tr>
+          <tr><th scope="row">Favicon fallback</th><td><a href="/favicon.ico">/favicon.ico</a></td><td>ICO fallback for browsers that do not support SVG favicons</td></tr>
           <tr><th scope="row">Social image</th><td><a href="/images/trustora-og-image.svg">/images/trustora-og-image.svg</a></td><td>Open Graph link previews</td></tr>
         </tbody>
       </table>

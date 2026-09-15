@@ -12,6 +12,20 @@ const longest = [...recordGraphInventory].sort((a, b) => b.words - a.words)[0];
 const zeroImage = recordGraphInventory.find((r) => r.images === 0) ?? recordGraphInventory[0];
 const mostImages = [...recordGraphInventory].sort((a, b) => b.images - a.images || b.words - a.words)[0];
 const maxRoutes = Math.max(...recordGraphSections.map((s) => s.routes));
+const sectionTotals: Record<string, { total: number; entry: string; label: string }> = {
+  top: { total: 25, entry: '/', label: 'Home' },
+  services: { total: 18, entry: '/services/employer-of-record/', label: 'Employer of Record' },
+  insights: { total: 16, entry: '/insights/', label: 'Insights' },
+  briefings: { total: 12, entry: '/briefings/', label: 'Briefings' },
+  industries: { total: 7, entry: '/industries/', label: 'Industries' },
+  locations: { total: 6, entry: '/locations/', label: 'Locations' },
+  legal: { total: 4, entry: '/legal/policy/', label: 'Operations policy' },
+  careers: { total: 4, entry: '/careers/', label: 'Careers' },
+  compare: { total: 3, entry: '/resources/', label: 'Resources' },
+  record: { total: 12, entry: '/record/', label: 'Company facts' },
+};
+const allTotal = recordGraphSections.reduce((n, s) => n + (sectionTotals[s.name]?.total ?? s.routes), 0);
+const allCaptured = recordGraphSections.reduce((n, s) => n + s.routes, 0);
 ---
 
 <RecordLayout
@@ -134,17 +148,13 @@ const maxRoutes = Math.max(...recordGraphSections.map((s) => s.routes));
         <caption>Archive entries by section and capture status</caption>
         <thead><tr><th scope="col">Section</th><th scope="col">Total</th><th scope="col">Captured</th><th scope="col">Redirect</th><th scope="col">Failed</th><th scope="col">Live entry point</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Top level</th><td>25</td><td>25</td><td>0</td><td>0</td><td><a href="/">Home</a></td></tr>
-          <tr><th scope="row">Services</th><td>18</td><td>18</td><td>0</td><td>0</td><td><a href="/services/employer-of-record/">Employer of Record</a></td></tr>
-          <tr><th scope="row">Insights</th><td>16</td><td>16</td><td>0</td><td>0</td><td><a href="/insights/">Insights</a></td></tr>
-          <tr><th scope="row">Briefings</th><td>12</td><td>12</td><td>0</td><td>0</td><td><a href="/briefings/">Briefings</a></td></tr>
-          <tr><th scope="row">Industries</th><td>7</td><td>7</td><td>0</td><td>0</td><td><a href="/industries/">Industries</a></td></tr>
-          <tr><th scope="row">Locations</th><td>6</td><td>6</td><td>0</td><td>0</td><td><a href="/locations/">Locations</a></td></tr>
-          <tr><th scope="row">Legal</th><td>4</td><td>4</td><td>0</td><td>0</td><td><a href="/legal/policy/">Operations policy</a></td></tr>
-          <tr><th scope="row">Careers</th><td>4</td><td>4</td><td>0</td><td>0</td><td><a href="/careers/">Careers</a></td></tr>
-          <tr><th scope="row">Compare</th><td>3</td><td>3</td><td>0</td><td>0</td><td><a href="/resources/">Resources</a></td></tr>
-          <tr><th scope="row">Record Room</th><td>12</td><td>12</td><td>0</td><td>0</td><td><a href="/record/">Company facts</a></td></tr>
-          <tr><th scope="row">All sections</th><td>107</td><td>107</td><td>0</td><td>0</td><td>—</td></tr>
+          {recordGraphSections.map((s) => {
+            const meta = sectionTotals[s.name] ?? { total: s.routes, entry: '#', label: s.name };
+            return (
+              <tr><th scope="row">{s.name}</th><td>{meta.total}</td><td>{s.routes}</td><td>0</td><td>0</td><td><a href={meta.entry}>{meta.label}</a></td></tr>
+            );
+          })}
+          <tr><th scope="row">All sections</th><td>{allTotal}</td><td>{allCaptured}</td><td>0</td><td>0</td><td>—</td></tr>
         </tbody>
       </table>
     </div>

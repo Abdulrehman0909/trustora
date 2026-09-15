@@ -62,12 +62,19 @@ for (const [route, html] of [...routes.entries()].sort()) {
   const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
   const text = main.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+  const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
+  const canon = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? '';
   inventory.push({
     href: route,
     file: fileOf(route),
     section: sectionOf(route),
     title,
     titleLen: title.length,
+    descLen: desc.length,
+    h1: (main.match(/<h1\b/g) ?? []).length,
+    h2: (main.match(/<h2\b/g) ?? []).length,
+    canonOk: canon === `https://trustora.net${route}`,
+    htmlSections: (main.match(/<section\b/g) ?? []).length,
     words: text ? text.split(' ').length : 0,
     images: (main.match(/data-media-source="/g) ?? []).length,
   });
@@ -97,6 +104,7 @@ const sections = SECTION_ORDER.map((name) => {
     routes: rows.length,
     words: rows.reduce((n, r) => n + r.words, 0),
     images: rows.reduce((n, r) => n + r.images, 0),
+    htmlSections: rows.reduce((n, r) => n + r.htmlSections, 0),
   };
 });
 
@@ -131,8 +139,8 @@ export const recordGraphTotals = ${JSON.stringify({ routes: inventory.length, wo
 export const recordGraphSections = ${JSON.stringify(sections)};
 export const recordGraphMatrixOrder = ${JSON.stringify(SECTION_ORDER)};
 export const recordGraphMatrix = ${JSON.stringify(matrix)};
-export interface RecordInventoryRow { href: string; file: string; section: string; title: string; titleLen: number; words: number; images: number; }
-export const recordGraphInventory: RecordInventoryRow[] = ${JSON.stringify(inventory.map(({ href, file, section, title, titleLen, words, images }) => ({ href, file, section, title, titleLen, words, images })))};
+export interface RecordInventoryRow { href: string; file: string; section: string; title: string; titleLen: number; descLen: number; h1: number; h2: number; canonOk: boolean; htmlSections: number; words: number; images: number; }
+export const recordGraphInventory: RecordInventoryRow[] = ${JSON.stringify(inventory.map(({ href, file, section, title, titleLen, descLen, h1, h2, canonOk, htmlSections, words, images }) => ({ href, file, section, title, titleLen, descLen, h1, h2, canonOk, htmlSections, words, images })))};
 export const recordGraphEdges: Array<[string, string]> = ${JSON.stringify(edges)};
 export interface RecordSiteTerm { term: string; occurrences: number; pages: number; }
 export const recordGraphSiteTerms: RecordSiteTerm[] = ${JSON.stringify(siteTerms)};
